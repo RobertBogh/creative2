@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <link rel="stylesheet" type="text/css" href="main.css">
+   <title>Creative_2</title>
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    </script>
+    
+</head>
+<body>
+   
+        <div id="alldiv">
+           <form>
+            <p id=text>The Multiverse is Full of Mysteries...</p> 
+            <p id=text>Enter a Subject to Search on Wikipedia:</p> 
+            <input type="text" id="input" value=""><br>
+            <span id=wikiStuff></span>
+            <br>
+            <input id="wikiButton" type="submit" value="Submit">
+            <div id="display-result"></div>
+        </div>
+        <div id="rightDiv">
+            <img id="theImage" src="question.png">
+        </div>
+    
+          <script>
+    //------------------------------------------
+     $(document).ready(function() {
+       $("#wikiButton").click(function(e){
+      var str = $("#input").val();
+      var value = str.split(' ');
+      e.preventDefault();
+      
+      var myurl = "https://en.wikipedia.org/w/api.php?action=query&prop=description&titles="
+      myurl = myurl + value[0];
+      console.log(myurl);
+      console.log("value.length", value.length);
+      if(value.length > 1){
+          for(var a = 1; a < value.length; a++){
+              myurl = myurl + "+" + value[a]
+          }
+      }
+      myurl = myurl+"&format=json"
+    
+
+      console.log(myurl)
+      $.ajax({
+          url : myurl,
+          dataType : "jsonp",
+          success : function(parsed_json) {
+              console.log(parsed_json)
+              var everything = "";
+              
+                if(!parsed_json.query.pages.hasOwnProperty("-1")){
+                  for (var i = 0; i < 1; i++) {
+                      var pages = parsed_json.query.pages
+                      for(var i in pages){
+                         var title = parsed_json.query.pages[i].title;
+                         
+                         var descriptionz = parsed_json.query.pages[i].description;
+                          
+                          everything += "<ul class=\"list-group\">";
+                          everything += "<li class=\"list-group-item list-group-item-danger\">Title: " + title;
+                          everything += "<li class=\"list-group-item list-group-item-dark\">Description: " + descriptionz;
+                          everything += "</ul>";
+                      }
+                  }
+              $("#wikiStuff").html(everything);
+              document.getElementById("theImage").src ="source.gif";
+            }
+            else{
+                console.log("hello")
+                everything +="Sorry, that's not a thing, consider entering something that exists"
+                $("#wikiStuff").html(everything);
+            }
+            
+            
+          },
+          fail: function(xhr, textStatus, errorThrown){
+               alert("The process failed. Try again.");
+          }
+         });
+       });
+     });
+
+        </script>
+</body>
+
+</html>
